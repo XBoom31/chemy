@@ -71,7 +71,6 @@ void reactiichimice::paintEvent(QPaintEvent *event)
     for(int i = 0; i < nr * (1-per); i++){
         createatom(painter, 1);
     }
-    balance("C2O3+H2->2HC");
 }
 
 reactiichimice::~reactiichimice()
@@ -120,6 +119,14 @@ int balance(int x, int y, int p, int q)
 
 }
 
+//este caracterul o cifra?
+bool cifra(QChar c){
+    for(auto x : cifre)
+        if(x == c)
+            return true;
+    return false;
+}
+
 //desparte elementul in atom si in numarul de atomi in 2 variabile
 QString desparte(QString E1, int &x){
     int e1c = 0;
@@ -127,39 +134,56 @@ QString desparte(QString E1, int &x){
         if(E1.contains(n)) e1c++;
     }
     QString A = E1;
+    //vedem daca are paranteze
+    bool paranteze = false;
+    for(QChar c:A)
+        if(c=="("){
+            paranteze = true;
+            break;
+        }
 
     //pentru element simplu, fara smecherii
     if(e1c == 1){
-        for(auto n : cifre)
-            A.replace(n, "");
-        x=E1.at(E1.size()-1).toLatin1() - 48; // -48 == char to int
+        if(!paranteze){
+            for(auto n : cifre)
+                A.replace(n, "");
+            x=E1.at(E1.size()-1).toLatin1() - 48; // -48 == char to int
+        }
+        else{
+            QString nr;
+            //punem ce e in fata parantezei in nr
+            for(int i = 0; i<A.size(); i++){
+                if(cifra(A.at(i)))
+                    nr+=A.at(i);
+                if(A.at(i)=="(")
+                    break;
+            }
+            //stergem numarul din a
+            A.replace(nr,"");
+            //s-ar putea sa fie doua numere la fel in a si atunci l-ar lua naspa
+            x = atoi(nr.toStdString().c_str());
+        }
     }
     else if(!e1c) //daca nu are nimic in fata
         x = 1;    //vom spune ca e doar un singur element
     else{   //broken
-        QString c;
 
-        bool on = true;
-        while(on){
-            if(A == "")
-                on=false;
-
-            c=A.at(A.size() - 1);
-            for (auto temp : cifre)
-                if(temp == c){
-                    A.remove(c);
-                    x = c.toInt();
-                }
-
-            bool f = false;
-            for (auto i : A)
-                for(auto o : cifre)
-                    if(i==o)
-                        f=true;
-            if(f)
-                on = false;
+        //daca are paranteze luam numarul din fata si
+        //il stergem din A
+        if(paranteze){
+            QString nr;
+            //punem ce e in fata parantezei in nr
+            for(int i = 0; i<A.size(); i++){
+                if(cifra(A.at(i)))
+                    nr+=A.at(i);
+                if(A.at(i)=="(")
+                    break;
+            }
+            //stergem numarul din a
+            A.replace(nr,"");
+            //s-ar putea sa fie doua numere la fel in a si atunci l-ar lua naspa
+            x = atoi(nr.toStdString().c_str());
         }
-
     }
     //stergem parantezele
     A.replace("(", "");
@@ -167,9 +191,9 @@ QString desparte(QString E1, int &x){
 
     //stergem primul numar, nu ar trebui sa facem asta, dar deocamdata
     //doar atat putem face pana rezolva cineva functia de mai sus
-    for(auto n : cifre)
-        if(A.at(0) == n)
-            A.remove(0, 1);
+    //for(auto n : cifre)
+      //  if(A.at(0) == n)
+        //    A.remove(0, 1);
 
     return A;
 }
@@ -261,11 +285,13 @@ void reactiichimice::on_balt_clicked()
 void reactiichimice::on_bverifica_clicked()
 {
     QIcon corect = QIcon(":/home/impl38/dev/chimie/check.png");
+    QIcon gresit = QIcon(":/home/impl38/dev/chimie/x.png");
     if(ui->cof1->value() == c1 &&
        ui->cof2->value() == c2 &&
        ui->cof3->value() == c3)
-        QMessageBox::warning(this, tr("Balansator"),tr("Le-ai nimerit!"));
-    else
         ui->bverifica->setIcon(corect);
+    else
+        ui->bverifica->setIcon(gresit);
 }
 
+f
