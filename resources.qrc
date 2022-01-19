@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/home/impl38/dev/chimie">
+        <file>atom.png</file>
+        <file>atom2.png</file>
+        <file>gov_elem</file>
+        <file>reactii</file>
+        <file>check.png</file>
+        <file>x.png</file>
+    </qresource>
+</RCC>
