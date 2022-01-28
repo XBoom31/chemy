@@ -28,7 +28,8 @@ using namespace Qt3DCore;
 // vis3d vizualizator3d;
 
 const float rad = 3;
-const float padding = 3;
+const float volSfera = (4*3.14*rad*rad*rad)/3;
+const float padding = 2.5;
 
 static QVector3D shift(0,0,0);
 static bool matflip = false;
@@ -89,39 +90,44 @@ Qt3DCore::QEntity *vis3d::createScene()
         createSphere(QVector3D(0,0,0),material, rootEntity);
     else{
         int xflip = 1;
-        QVector3D xpad(padding, 0,0);
+        QVector3D xpad(padding, 0, 0);
         int yflip = 0;
         QVector3D ypad(0, padding, 0);
         int zflip = 0;
         QVector3D zpad(0, 0, padding);
         int c =0,c2=1;
-
         for (int i = 0; i < nucleoni; i++){
             switch(c){
             case 0:
+                xpad[2] = i%4-padding;
                 cS(xpad*c2);
                 c++;
                 continue;
             case 1:
+                ypad[2] = i%4-padding;
                 cS(ypad*c2);
                 c++;
                 continue;
             case 2:
+                zpad[0] = i%4-padding;
                 cS(zpad*c2);
                 c++;
                 continue;
             case 3:
+                xpad[1] = i%4-padding;
                 cS(-xpad*c2);
                 c++;
                 continue;
             case 4:
+                ypad[0] = i%4-padding;
                 cS(-ypad*c2);
                 c++;
                 continue;
             case 5:
+                zpad[1] = i%4-padding;
                 cS(-zpad*c2);
                 c = 0;
-                shift=QVector3D(2.5,2.5,2.5);
+
                 mad = true; //yes
                 c2++;
                 continue;
